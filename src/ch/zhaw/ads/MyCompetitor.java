@@ -47,19 +47,21 @@ public class MyCompetitor implements Comparable<MyCompetitor> {
 
     @Override
     public int compareTo(MyCompetitor o) {
-        // to be done
-        return -1;
+        if (name.equals(o.name) && time.equals(o.time)) return 0;
+        if (name.equals(o.name)) return time.compareTo(o.time);
+        return time.compareTo(o.time);
     }
 
     @Override
     public int hashCode() {
-        // to be done
-        return -1;
+        int hash = 1;
+        hash = hash * 13 + name.hashCode();
+        hash = hash * 17 + time.hashCode();
+        return hash;
     }
 
     @Override
     public boolean equals (Object o) {
-        // to be done
-        return false;
+        return this.compareTo((MyCompetitor) o) == 0;
     }
 }
