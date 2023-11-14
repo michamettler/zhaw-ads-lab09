@@ -9,6 +9,7 @@ import java.util.Set;
 public class MyHashtable<K, V> implements Map<K, V> {
     private K[] keys;
     private V[] values;
+    private final Town EMPTY = new Town(-1, "DELETED", "DELETED");
 
     private int hash(Object k) {
         int h = Math.abs(k.hashCode());
@@ -32,11 +33,14 @@ public class MyHashtable<K, V> implements Map<K, V> {
 
     // Associates the specified value with the specified key in this map (optional operation).
     public V put(K key, V value) {
-        int h = findPos(key);
+        int h = hash(key);
         if (keys[h] == null) {
             keys[h] = key;
             values[h] = value;
         } else {
+            while(keys[h] != null && !keys[h].equals(key)) {
+                h = (h + 1) % keys.length;
+            }
             keys[h] = key;
             values[h] = value;
         }
@@ -45,16 +49,8 @@ public class MyHashtable<K, V> implements Map<K, V> {
 
     // Returns the value to which this map maps the specified key.
     public V get(Object key) {
-        int h = findPos(key);
-        return h != -1 ? values[h] : null;
-    }
-
-    private int findPos(Object key) {
-        int currentPos = hash(key);
-        while(values[currentPos] != null && !keys[currentPos].equals(key)) {
-            currentPos = (currentPos + 1) % values.length;
-        }
-        return currentPos;
+        int h = hash(key);
+        return values[h];
     }
 
     // Removes the mapping for this key from this map if present (optional operation).
