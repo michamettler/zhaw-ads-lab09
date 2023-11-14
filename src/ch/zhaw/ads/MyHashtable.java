@@ -10,6 +10,8 @@ public class MyHashtable<K, V> implements Map<K, V> {
     private K[] keys;
     private V[] values;
 
+    private int size;
+
     private int hash(Object k) {
         int h = Math.abs(k.hashCode());
         return h % keys.length;
@@ -29,6 +31,9 @@ public class MyHashtable<K, V> implements Map<K, V> {
     // Associates the specified value with the specified key in this map (optional operation).
     public V put(K key, V value) {
         int h = findPos(key);
+        if (values[h] == null) {
+            size++;
+        }
         keys[h] = key;
         values[h] = value;
         return value;
@@ -44,8 +49,12 @@ public class MyHashtable<K, V> implements Map<K, V> {
     // Removes the mapping for this key from this map if present (optional operation).
     public V remove(Object key) {
         int h = findPos(key);
+        if (values[h] == null) {
+            return null;
+        }
         var toRemove = values[h];
         values[h] = null;
+        size--;
         return toRemove;
     }
 
@@ -63,13 +72,7 @@ public class MyHashtable<K, V> implements Map<K, V> {
 
     // Returns the number of key-value mappings in this map.
     public int size() {
-        int cntr = 0;
-        for (var value : values) {
-            if (value != null) {
-                cntr++;
-            }
-        }
-        return cntr;
+        return size;
     }
 
     // UnsupportedOperationException ===================================================================
