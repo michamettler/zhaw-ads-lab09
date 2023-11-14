@@ -11,6 +11,7 @@ public class MyHashtable<K, V> implements Map<K, V> {
     private V[] values;
 
     private int size;
+    private final double LOAD_FACTOR = 0.75;
 
     private int hash(Object k) {
         int h = Math.abs(k.hashCode());
@@ -30,6 +31,9 @@ public class MyHashtable<K, V> implements Map<K, V> {
 
     // Associates the specified value with the specified key in this map (optional operation).
     public V put(K key, V value) {
+        if (size >= keys.length * LOAD_FACTOR) {
+            resize();
+        }
         int h = findPos(key);
         if (values[h] == null) {
             size++;
@@ -37,6 +41,21 @@ public class MyHashtable<K, V> implements Map<K, V> {
         keys[h] = key;
         values[h] = value;
         return value;
+    }
+
+    private void resize() {
+        int newSize = keys.length * 2;
+        K[] oldKeys = keys;
+        V[] oldValues = values;
+        keys = (K[]) new Object[newSize];
+        values = (V[]) new Object[newSize];
+        size = 0;
+
+        for (int i = 0; i < oldKeys.length; i++) {
+            if (oldKeys[i] != null) {
+                put(oldKeys[i], oldValues[i]);
+            }
+        }
     }
 
     // Returns the value to which this map maps the specified key.
@@ -59,15 +78,13 @@ public class MyHashtable<K, V> implements Map<K, V> {
     }
 
     private int findPos(Object key) {
+        int collisionNum = 0;
         int h = hash(key);
-        if (keys[h] == null) {
-            return h;
-        } else {
-            while (keys[h] != null && !keys[h].equals(key)) {
-                h = (h + 1) % keys.length;
-            }
-            return h;
+        while (h > 0 && keys[h] != null && !keys[h].equals(key)) {
+            h += 2 * ++collisionNum -1;
+            h = h % keys.length;
         }
+        return h;
     }
 
     // Returns the number of key-value mappings in this map.
