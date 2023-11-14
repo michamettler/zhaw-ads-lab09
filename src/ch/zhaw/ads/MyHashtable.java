@@ -9,7 +9,6 @@ import java.util.Set;
 public class MyHashtable<K, V> implements Map<K, V> {
     private K[] keys;
     private V[] values;
-    private final Town EMPTY = new Town(-1, "DELETED", "DELETED");
 
     private int hash(Object k) {
         int h = Math.abs(k.hashCode());
@@ -19,10 +18,6 @@ public class MyHashtable<K, V> implements Map<K, V> {
     public MyHashtable(int size) {
         keys = (K[]) new Object[size];
         values = (V[]) new Object[size];
-        for (int i = 0; i < size; i++) {
-            keys[i] = null;
-            values[i] = null;
-        }
     }
 
     // Removes all mappings from this map (optional operation).
@@ -49,20 +44,29 @@ public class MyHashtable<K, V> implements Map<K, V> {
 
     // Returns the value to which this map maps the specified key.
     public V get(Object key) {
-        int h = hash(key);
-        return values[h];
+        int h = findPos(key);
+        if (keys[h] != null) return values[h];
+        return null;
     }
 
     // Removes the mapping for this key from this map if present (optional operation).
     public V remove(Object key) {
+        int h = findPos(key);
+        var toRemove = values[h];
+        values[h] = null;
+        return toRemove;
+    }
+
+    private int findPos(Object key) {
         int h = hash(key);
-        if (keys[h] != null) {
-            var toRemove = values[h];
-            values[h] = null;
-            keys[h] = null;
-            return toRemove;
+        if (keys[h] == null) {
+            return h;
+        } else {
+            while(keys[h] != null && !keys[h].equals(key)) {
+                h = (h + 1) % keys.length;
+            }
+            return h;
         }
-        return null;
     }
 
     // Returns the number of key-value mappings in this map.
