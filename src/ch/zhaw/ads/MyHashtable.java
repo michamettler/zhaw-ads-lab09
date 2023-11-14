@@ -1,13 +1,14 @@
 package ch.zhaw.ads;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("unchecked")
 public class MyHashtable<K, V> implements Map<K, V> {
-    private K[] keys = (K[]) new Object[10];
-    private V[] values = (V[]) new Object[10];
+    private K[] keys;
+    private V[] values;
 
     private int hash(Object k) {
         int h = Math.abs(k.hashCode());
@@ -15,37 +16,68 @@ public class MyHashtable<K, V> implements Map<K, V> {
     }
 
     public MyHashtable(int size) {
-        // to be done
+        keys = (K[]) new Object[size];
+        values = (V[]) new Object[size];
+        for (int i = 0; i < size; i++) {
+            keys[i] = null;
+            values[i] = null;
+        }
     }
 
     // Removes all mappings from this map (optional operation).
     public void clear() {
-        // to be done
-        throw new UnsupportedOperationException();
+        Arrays.fill(keys, null);
+        Arrays.fill(values, null);
     }
 
     // Associates the specified value with the specified key in this map (optional operation).
     public V put(K key, V value) {
-        // to be done
-        throw new UnsupportedOperationException();
+        int h = findPos(key);
+        if (keys[h] == null) {
+            keys[h] = key;
+            values[h] = value;
+        } else {
+            keys[h] = key;
+            values[h] = value;
+        }
+        return value;
     }
 
     // Returns the value to which this map maps the specified key.
     public V get(Object key) {
-        // to be done
-        throw new UnsupportedOperationException();
+        int h = findPos(key);
+        return h != -1 ? values[h] : null;
+    }
+
+    private int findPos(Object key) {
+        int currentPos = hash(key);
+        while(values[currentPos] != null && !keys[currentPos].equals(key)) {
+            currentPos = (currentPos + 1) % values.length;
+        }
+        return currentPos;
     }
 
     // Removes the mapping for this key from this map if present (optional operation).
     public V remove(Object key) {
-        // to be done (Aufgabe 3)
-        throw new UnsupportedOperationException();
+        int h = hash(key);
+        if (keys[h] != null) {
+            var toRemove = values[h];
+            values[h] = null;
+            keys[h] = null;
+            return toRemove;
+        }
+        return null;
     }
 
     // Returns the number of key-value mappings in this map.
     public int size() {
-        // to be done
-        throw new UnsupportedOperationException();
+        int cntr = 0;
+        for (var value : values) {
+            if (value != null) {
+                cntr++;
+            }
+        }
+        return cntr;
     }
 
     // UnsupportedOperationException ===================================================================
