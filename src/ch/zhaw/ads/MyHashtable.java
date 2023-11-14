@@ -28,17 +28,9 @@ public class MyHashtable<K, V> implements Map<K, V> {
 
     // Associates the specified value with the specified key in this map (optional operation).
     public V put(K key, V value) {
-        int h = hash(key);
-        if (keys[h] == null) {
-            keys[h] = key;
-            values[h] = value;
-        } else {
-            while(keys[h] != null && !keys[h].equals(key)) {
-                h = (h + 1) % keys.length;
-            }
-            keys[h] = key;
-            values[h] = value;
-        }
+        int h = findPos(key);
+        keys[h] = key;
+        values[h] = value;
         return value;
     }
 
@@ -62,7 +54,7 @@ public class MyHashtable<K, V> implements Map<K, V> {
         if (keys[h] == null) {
             return h;
         } else {
-            while(keys[h] != null && !keys[h].equals(key)) {
+            while (keys[h] != null && !keys[h].equals(key)) {
                 h = (h + 1) % keys.length;
             }
             return h;
